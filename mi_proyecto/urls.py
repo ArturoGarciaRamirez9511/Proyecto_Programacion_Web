@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from gestion_clientes.views import DocumentoViewSet
+# --- AGREGAMOS ESTAS DOS IMPORTACIONES ---
+from django.conf import settings 
+from django.conf.urls.static import static 
 
 router = DefaultRouter()
 router.register(r'documentos', DocumentoViewSet)
@@ -26,3 +29,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
 ]
+
+# --- AGREGAMOS ESTO AL FINAL ---
+# Esto le dice a Django: "Si estamos en modo desarrollo (DEBUG=True), 
+# permite que el navegador acceda a la carpeta MEDIA"
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
