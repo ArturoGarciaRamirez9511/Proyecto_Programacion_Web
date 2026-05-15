@@ -1,30 +1,34 @@
 import os
 from pathlib import Path
 
+# Base del proyecto
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Seguridad
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-key-tijuana-2026')
-
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
-
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
+# Aplicaciones Instaladas
 INSTALLED_APPS = [
-    'jazzmin',
+    'jazzmin', # Panel de administración moderno
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Librerías extra
     'rest_framework',
     'corsheaders',
-    'gestion_clientes',
+    # Tu aplicación local
+    'gestion_clientes.apps.GestionClientesConfig',
 ]
 
+# Capas de seguridad y procesamiento (Middleware)
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # Debe ir antes de CommonMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -35,7 +39,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mi_proyecto.urls'
 
-# --- ESTO ES LO QUE FALTABA ---
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -54,6 +57,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mi_proyecto.wsgi.application'
 
+# Base de Datos (SQLite para desarrollo, fácil de transportar al ITT)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -61,25 +65,40 @@ DATABASES = {
     }
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
+# Modelo de Usuario Personalizado (Punto 7.1 de tu documentación)
 AUTH_USER_MODEL = 'gestion_clientes.Usuario'
 
+# Validación de contraseñas
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
+]
+
+# Regionalización (Configurado para Tijuana)
 LANGUAGE_CODE = 'es-mx'
 TIME_ZONE = 'America/Tijuana'
 USE_I18N = True
 USE_TZ = True
 
+# Archivos Estáticos (CSS, JS)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Archivos Media (PDFs de trámites y evidencias)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Configuración de CORS (Permitir conexión desde React)
+CORS_ALLOW_ALL_ORIGINS = True 
 
+# Configuración de Correo (Notificaciones automáticas)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'tu_correo@gmail.com')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

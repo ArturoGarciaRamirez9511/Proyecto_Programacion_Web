@@ -1,37 +1,26 @@
-"""
-URL configuration for mi_proyecto project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from gestion_clientes.views import DocumentoViewSet
-# --- AGREGAMOS ESTAS DOS IMPORTACIONES ---
-from django.conf import settings 
+from django.conf import settings
+# ESTA ES LA RUTA CORRECTA QUE NO DEBE FALLAR:
 from django.conf.urls.static import static 
+from gestion_clientes.views import (
+    ClienteViewSet, DocumentoViewSet, ReporteGeneradoViewSet, 
+    TipoDocumentoViewSet, EstadoViewSet
+)
 
 router = DefaultRouter()
+router.register(r'clientes', ClienteViewSet)
 router.register(r'documentos', DocumentoViewSet)
+router.register(r'reportes', ReporteGeneradoViewSet)
+router.register(r'tipos', TipoDocumentoViewSet)
+router.register(r'estados', EstadoViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
 ]
 
-# --- AGREGAMOS ESTO AL FINAL ---
-# Esto le dice a Django: "Si estamos en modo desarrollo (DEBUG=True), 
-# permite que el navegador acceda a la carpeta MEDIA"
+# Servir archivos media (PDFs) durante el desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
