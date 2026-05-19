@@ -1,5 +1,12 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
+from django.core.mail import send_mail
+from django.conf import settings
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from .services import revisar_documentos_proximos
+
 from .models import (
     Cliente, Documento, TipoDocumento, 
     EstadoDocumento, ReporteGenerado, Usuario
@@ -22,11 +29,20 @@ class DocumentoViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         user = self.request.user if self.request.user.is_authenticated else None
-        serializer.save(creado_por=user)
+        
+        documento = serializer.save(creado_por=user)
+
+        send_mail(
+            subject='Nuevo documento registrado',
+            message=f'Se registró el documento: {documento.nombre}',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=['destino@gmail.com'],
+            fail_silently=False,
+        )
 
     def perform_update(self, serializer):
         user = self.request.user if self.request.user.is_authenticated else None
-        serializer.save(creado_por=user) # Mantenemos rastro de quién modificó
+        serializer.save(creado_por=user)
 
 class ReporteGeneradoViewSet(viewsets.ModelViewSet):
     # Ordenamos por fecha para que lo más nuevo salga primero en React
@@ -47,3 +63,13 @@ class EstadoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EstadoDocumento.objects.all()
     serializer_class = EstadoSerializer
     permission_classes = [permissions.AllowAny]
+
+@api_view(['POST'])
+def verificar_documentos(request):
+
+    enviados = revisar_documentos_proximos()
+
+    return Response({
+        'mensaje': 'Verificación completada',
+        'correos_enviados': enviados
+    })
