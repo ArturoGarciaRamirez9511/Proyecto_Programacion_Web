@@ -1,0 +1,23 @@
+/* Mover el botón "Agregar" de la derecha a la izquierda */
+.object-tools {
+    float: left !important;
+    margin-left: 10px !important;
+    margin-top: 5px !important;
+    display: flex !important;
+    position: relative !important;
+    z-index: 10;
+}
+
+/* Ajustar el espacio del buscador para que no choque */
+#changelist-search {
+    float: left !important;
+    margin-right: 15px !important;
+}
+
+/* Hacer que el botón se vea más integrado con los otros botones */
+.object-tools a.addlink {
+    border-radius: 8px !important;
+    padding: 8px 15px !important;
+    background-color: #28a745 !important; /* Verde sólido */
+    font-weight: bold !important;
+}
